@@ -12,5 +12,5 @@ ALLOWED_CHAT_IDS: list[int] = [
     int(x) for x in os.getenv("ALLOWED_CHAT_IDS", "").split(",") if x.strip()
 ]
 
-MODEL = "gemini-2.0-flash-lite"
+MODEL = "gemini-2.0-flash"
 MAX_TOKENS = 1024
