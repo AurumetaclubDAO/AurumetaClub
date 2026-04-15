@@ -1,25 +1,22 @@
-import groq
+import google.generativeai as genai
 from telegram_bot import config
 
+genai.configure(api_key=config.GEMINI_API_KEY)
 
-_client: groq.Groq | None = None
+_model: genai.GenerativeModel | None = None
 
 
-def _get_client() -> groq.Groq:
-    global _client
-    if _client is None:
-        _client = groq.Groq(api_key=config.GROQ_API_KEY)
-    return _client
+def _get_model() -> genai.GenerativeModel:
+    global _model
+    if _model is None:
+        _model = genai.GenerativeModel(config.MODEL)
+    return _model
 
 
 def ask(system_prompt: str, user_message: str) -> str:
-    client = _get_client()
-    response = client.chat.completions.create(
-        model=config.MODEL,
-        max_tokens=config.MAX_TOKENS,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
+    model = _get_model()
+    response = model.generate_content(
+        f"{system_prompt}\n\nUser: {user_message}",
+        generation_config=genai.GenerationConfig(max_output_tokens=config.MAX_TOKENS),
     )
-    return response.choices[0].message.content
+    return response.text
